@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <style>
+        * {
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h5>2015년 아희 커밋 추세</h5>
+        <div id="heuistory"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var h = Raphael('heuistory', 400, 400);
+
+            function loadCommits(group, name, cb) {
+                $.ajax({
+                    url: 'https://api.github.com/repos/' + group + '/' + name + '/commits',
+                    dataType: 'json',
+                    data: {
+                        since: '2015-01-01T00:00:00Z',
+                        until: '2015-12-31T24:00:00Z'
+                    },
+                    success: function(data) {
+                        console.log(data);
+                        cb(data);
+                    }
+                })
+            }
+
+            function loadRepos(group) {
+                $.ajax({
+                    url: 'https://api.github.com/orgs/' + group + '/repos',
+                    dataType: 'json',
+                    success: function(repos) {
+                        $.each(repos, function(i, repo) {
+                            var x = 260;
+                            var y = 20 * i + 20;
+
+                            h.text(x, y, repo.name)
+                                    .attr('text-anchor', 'start');
+
+                            loadCommits(group, repo.name, function(commits) {
+                                var stats = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+                                $.each(commits, function(j, commit) {
+                                    var month = new Date(commit.commit.committer.date).getMonth();
+                                    stats[month] += 1;
+                                });
+
+                                $.each(stats, function(k, stat) {
+                                    var r = 0.5 * stat;
+                                    h.circle(k * 20 + 20, y, r)
+                                            .attr('stroke', 'none')
+                                            .attr('fill', '#E6550D');
+                                });
+                            });
+                        });
+                    }
+                });
+            }
+
+            loadRepos('aheui');
+        });
+    </script>
+</body>
+</html>
