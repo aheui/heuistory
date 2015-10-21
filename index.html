@@ -17,8 +17,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
     <script>
         $(document).ready(function() {
-            var h = Raphael('heuistory', 400, 400);
-
             function loadCommits(group, name, cb) {
                 $.ajax({
                     url: 'https://api.github.com/repos/' + group + '/' + name + '/commits',
@@ -40,6 +38,8 @@
                 } else {
                     window.heuistoryLoaded = true;
                 }
+
+                var h = Raphael('heuistory', 400, 400);
 
                 $.ajax({
                     url: 'https://api.github.com/orgs/' + group + '/repos',
