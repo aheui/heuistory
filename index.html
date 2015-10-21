@@ -35,6 +35,12 @@
             }
 
             function loadRepos(group) {
+                if(window.heuistoryLoaded) {
+                    return;
+                } else {
+                    window.heuistoryLoaded = true;
+                }
+
                 $.ajax({
                     url: 'https://api.github.com/orgs/' + group + '/repos',
                     dataType: 'json',
